@@ -57,11 +57,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
-            -DLLVM_ENABLE_PROJECTS="clang;lld;lldb" \
-            ../arkari/llvm
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" -DLLVM_ENABLE_PROJECTS="clang;lld;lldb" ../arkari/llvm
           ninja
 
       - name: Install
