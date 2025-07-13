@@ -74,7 +74,7 @@ jobs:
           cd "$INSTALL_DIR"
           tar -czf "${{ matrix.artifact }}.tar.gz" bin lib
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: arkari-${{ matrix.artifact }}
           path: "${{ matrix.artifact }}.tar.gz"
