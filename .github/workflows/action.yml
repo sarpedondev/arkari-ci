@@ -21,16 +21,19 @@ jobs:
             artifact: mac-arm64
     runs-on: ${{ matrix.os }}
     env:
-      INSTALL_DIR: ${{ runner.temp }}/arkari-install
+      INSTALL_DIR: $RUNNER_TEMP/arkari-install
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/checkout@v4
         with:
           repository: KomiMoe/Arkari
           path: arkari
+
       - name: Setup MSVC Developer Environment
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
+
       - name: Install prerequisites
         if: runner.os != 'Windows'
         run: |
@@ -41,30 +44,36 @@ jobs:
             brew update
             brew install cmake ninja libxml2 xz zlib
           fi
-      - uses: actions/cache@v3
+
+      - name: Cache build directory
+        uses: actions/cache@v3
         with:
           path: build
           key: build-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('arkari/llvm/**') }}
           restore-keys: |
             build-${{ matrix.os }}-${{ matrix.triplet }}-
+
       - name: Configure and build
         run: |
           mkdir -p build
           cd build
           cmake -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+            -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
             -DLLVM_ENABLE_PROJECTS="clang;lld;lldb" \
             ../arkari/llvm
           ninja
+
       - name: Install
         run: |
           cd build
           ninja install
+
       - name: Archive artifact
         run: |
-          cd "${INSTALL_DIR}"
+          cd "$INSTALL_DIR"
           tar -czf "${{ matrix.artifact }}.tar.gz" bin lib
+
       - uses: actions/upload-artifact@v3
         with:
           name: arkari-${{ matrix.artifact }}
