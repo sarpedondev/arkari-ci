@@ -72,4 +72,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: arkari-${{ matrix.artifact }}
-          path: "${{ matrix.artifact }}.tar.gz"
+          path: "${{ runner.temp }}/arkari-install/${{ matrix.artifact }}.tar.gz"
