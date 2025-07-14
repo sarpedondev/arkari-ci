@@ -21,8 +21,6 @@ jobs:
             triplet: arm64-osx
             artifact: mac-arm64
     runs-on: ${{ matrix.os }}
-    env:
-      INSTALL_DIR: $RUNNER_TEMP/arkari-install
     steps:
       - uses: actions/checkout@v4
 
@@ -58,7 +56,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" -DLLVM_ENABLE_PROJECTS="clang;lld;lldb" -DLLDB_USE_SYSTEM_DEBUGSERVER=ON -DLLDB_INCLUDE_TESTS=OFF ../arkari/llvm
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="${{ runner.temp }}/arkari-install" -DLLVM_ENABLE_PROJECTS="clang;lld;lldb" -DLLDB_USE_SYSTEM_DEBUGSERVER=ON -DLLDB_INCLUDE_TESTS=OFF ../arkari/llvm
           ninja
 
       - name: Install
@@ -68,7 +66,7 @@ jobs:
 
       - name: Archive artifact
         run: |
-          cd "$INSTALL_DIR"
+          cd "${{ runner.temp }}/arkari-install"
           tar -czf "${{ matrix.artifact }}.tar.gz" bin lib
 
       - uses: actions/upload-artifact@v4
